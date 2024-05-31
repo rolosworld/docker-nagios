@@ -1,0 +1,29 @@
+version: "3.3"
+services:
+
+  nagios:
+    image: '${DOCKER_IMAGE_NAGIOS}'
+    restart: always
+    env_file:
+      - .env
+    ports:
+    - "80:80"
+    build:
+      context: ./nagios
+      dockerfile: Dockerfile
+      args:
+        NAGIOS_ADMIN: $NAGIOS_ADMIN
+        NAGIOS_PASSWORD: $NAGIOS_PASSWORD
+        APACHE_RUN_DIR: $APACHE_RUN_DIR
+        APACHE_RUN_USER: $APACHE_RUN_USER
+        APACHE_RUN_GROUP: $APACHE_RUN_GROUP
+        APACHE_LOG_DIR: $APACHE_LOG_DIR
+        APACHE_PID_FILE: $APACHE_PID_FILE
+        APACHE_LOCK_DIR: $APACHE_LOCK_DIR
+        LANG: $LANG
+    networks:
+      - net-nagios
+      
+networks:
+  net-nagios:
+    driver: bridge
