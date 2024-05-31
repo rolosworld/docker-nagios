@@ -4,8 +4,8 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y autoconf gcc libc6 make wget unzip apache2 apache2-utils php libgd-dev openssl libssl-dev libmcrypt-dev bc gawk dc build-essential snmp libnet-snmp-perl gettext
 
+# NAGIOS
 WORKDIR /build
-
 RUN wget -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.14.tar.gz
 RUN tar xzf nagioscore.tar.gz
 
@@ -24,7 +24,18 @@ RUN make install-webconf
 RUN a2enmod rewrite
 RUN a2enmod cgi
 
-#COPY ./apache.conf /usr/local/apache2/conf/httpd.conf
+# NAGIOS PLUGINS
+WORKDIR /build
+RUN wget --no-check-certificate -O nagios-plugins.tar.gz https://github.com/nagios-plugins/nagios-plugins/archive/release-2.4.6.tar.gz
+RUN tar zxf nagios-plugins.tar.gz
+
+WORKDIR /build/nagios-plugins-release-2.4.6
+RUN ./tools/setup
+RUN ./configure
+RUN make
+RUN make install
+
+
 COPY ./entrypoint.sh /usr/bin/entrypoint.sh
 
 ARG APACHE_RUN_DIR
